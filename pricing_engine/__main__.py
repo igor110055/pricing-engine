@@ -1,12 +1,20 @@
 import asyncio
-from pricing_engine.engine import main
+from pricing_engine.engine import PBDEngine
+from pricing_engine.producer import Producer, load_ck_config
 
-# TEMP: env
-WS_URL = "wss://stream.binance.com:9443/ws/btcusdt@depth5"
+# LATER: turn this into cli?
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
+    configs = load_ck_config()
+
+    producer = Producer(configs)
+    engine = PBDEngine(producer, 'ethusdt')
+
     try:
-        loop.run_until_complete(main(WS_URL))
+        loop.run_until_complete(engine.start())
     except KeyboardInterrupt:
         print('[Stopped by Ctrl+C]')
+    finally:
+        # OPTIONAL: use producer.flush() to wait for outstanding message delivery
+        producer.close()

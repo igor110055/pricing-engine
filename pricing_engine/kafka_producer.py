@@ -1,1 +1,0 @@
-# TODO: init kafka producer here
