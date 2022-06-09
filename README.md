@@ -1,11 +1,25 @@
 # Pricing Engine
 
-> **WIP**
+Pricing Engine based on Partial Book Depth.
 
-Pricing Engine Bruh...
+## Setup
 
+```bash
+# 1. Install dependencies
+poetry install
 
-## Confluent Kafka Config
+# 2. Copy .env.example to .env and fill in all variables
+cp .env.example .env
+
+# 3. Activate python virtual-env
+poetry shell
+
+# 4. Execute it
+python pricing_engine
+```
+
+---
+### Confluent Kafka Config (Backup as Reference)
 
 ```conf
 # Required connection configs for Kafka producer, consumer, and admin
@@ -14,8 +28,6 @@ security.protocol=SASL_SSL
 sasl.mechanisms=PLAIN
 sasl.username={{ CLUSTER_API_KEY }}
 sasl.password={{ CLUSTER_API_SECRET }}
-sasl.username=YRW5BYWA5UPIVCMV
-sasl.password=IspdLpjveC3h9d6FFq8AN9T9ZuaCZgOn15uzacj3PK7+pDrg0NFzGnp9cO/No9bf
 
 # Best practice for higher availability in librdkafka clients prior to 1.7
 session.timeout.ms=45000
