@@ -1,5 +1,5 @@
 """
-Pricing Engine init
+Websocket Price Publisher
 """
 from pathlib import Path
 from dotenv import load_dotenv
@@ -17,7 +17,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler("debug-engine.log"),
+        logging.FileHandler("debug-publisher.log"),
         logging.StreamHandler(sys.stdout)
     ]
 )

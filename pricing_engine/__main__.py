@@ -9,6 +9,10 @@ if __name__ == '__main__':
     configs = load_ck_config()
 
     producer = Producer(configs)
+
+    # TODO: Use asyncio queue to collect bidask from different platform
+    # TODO: sent to kafka in collector instead
+
     engine = PBDEngine(producer, 'ethusdt')
 
     try:

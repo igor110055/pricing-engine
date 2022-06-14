@@ -2,19 +2,23 @@
 name = "pricing-engine"
 version = "0.0.2"
 description = "Pricing Engine"
+license = "Unlicense"
 authors = ["DaRekaze <darekaze@gmail.com>"]
 readme = "README.md"
 packages = [
     { include = "pricing_engine"},
+    { include = "price_publisher"},
 ]
 
 [tool.poetry.dependencies]
 python = "^3.8"
 python-dotenv = "^0.20.0"
-aiometer = "^0.3.0"
 httpx = {extras = ["http2", "socks"], version = "^0.23.0"}
 websockets = "^10.3"
 confluent-kafka = "^1.8.2"
+fastapi = "^0.78.0"
+uvicorn = "^0.17.6"
+aiokafka = "^0.7.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1"
