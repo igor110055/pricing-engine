@@ -12,11 +12,8 @@ ssl_context = create_ssl_context()
 app = FastAPI()
 
 
-def init_ck_consumer(topic: str, loop: asyncio.AbstractEventLoop):
-    """
-    Load env variables as confluent kafka config.
-    Return AIOKafkaConsumer.
-    """
+def create_ck_consumer(topic: str, loop: asyncio.AbstractEventLoop):
+    """Create and return Kafka consumer."""
     return AIOKafkaConsumer(
         topic,
         loop=loop,
@@ -36,7 +33,7 @@ async def ws_price_publisher(websocket: WebSocket, topic: str):
     logger.info('Client Connected!')
 
     loop = asyncio.get_event_loop()
-    consumer = init_ck_consumer(topic, loop)
+    consumer = create_ck_consumer(topic, loop)
 
     await consumer.start()
 
