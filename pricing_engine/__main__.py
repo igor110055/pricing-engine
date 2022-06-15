@@ -17,18 +17,18 @@ async def main(topic):
     stack = LockStack()
     engine = PBDEngine(producer, stack, topic)
 
-    # FIXME: async does not catch ctrl+c
     await producer.start()
     try:
         await asyncio.gather(
             engine.run(),
             binance_pbd_ws(stack, binance_symbol),
         )
-    except KeyboardInterrupt:
-        print('[Stopped by Ctrl+C]')
     finally:
         await producer.stop()
 
 
 if __name__ == '__main__':
-    main(_anyio_backend="asyncio")
+    try:
+        main(_anyio_backend="asyncio")
+    except KeyboardInterrupt:
+        print('[Stopped by Ctrl+C]')

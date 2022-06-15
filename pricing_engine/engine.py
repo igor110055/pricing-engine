@@ -60,9 +60,6 @@ class PBDEngine:
             logger.error(ex.args[0].str())
 
     async def run(self, interval: float = 1):
-        """Run engine, processing message periodially."""
+        """Run engine and process messages given an interval (default to 1s)."""
         while True:
-            await asyncio.gather(
-                asyncio.sleep(interval),
-                self.process(),
-            )
+            await asyncio.gather(asyncio.sleep(interval), self.process())
