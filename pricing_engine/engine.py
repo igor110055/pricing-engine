@@ -14,7 +14,9 @@ logger = logging.getLogger(__name__)
 class PBDEngine:
     """Pricing engine implementation based on Partial Book Depth (PBD)."""
 
-    def __init__(self, producer: AIOKafkaProducer, stack: LockStack, topic: str) -> None:
+    def __init__(
+        self, producer: AIOKafkaProducer, stack: LockStack, topic: str
+    ) -> None:
         self._producer = producer
         self._stack = stack
         self._topic = topic
@@ -25,22 +27,28 @@ class PBDEngine:
         best_bid = [float(bids[0][0]), float(bids[0][1])]
         best_ask = [float(asks[0][0]), float(asks[0][1])]
 
-        logger.info(json.dumps({
-            'BestBid': f'{best_bid[1]:.8f}@{best_bid[0]:.8f}',
-            'BestAsk': f'{best_ask[1]:.8f}@{best_ask[0]:.8f}',
-            'Delta': f'{(best_ask[0] - best_bid[0]):.8f}',
-        }))
+        logger.info(
+            json.dumps(
+                {
+                    "BestBid": f"{best_bid[1]:.8f}@{best_bid[0]:.8f}",
+                    "BestAsk": f"{best_ask[1]:.8f}@{best_ask[0]:.8f}",
+                    "Delta": f"{(best_ask[0] - best_bid[0]):.8f}",
+                }
+            )
+        )
 
         # set spread, static pct mode for now, but really we need to shade this based on volume demand
         spread_pct = 0.01  # 1%
 
         # size needs to be improved obviously!!!
-        return json.dumps({
-            'best_bid': best_bid[0] + (best_bid[0]*spread_pct),
-            'best_ask': best_ask[0] - (best_ask[0]*spread_pct),
-            'best_bid_size': best_bid[1],
-            'best_ask_size': best_ask[1],
-        })
+        return json.dumps(
+            {
+                "best_bid": best_bid[0] + (best_bid[0] * spread_pct),
+                "best_ask": best_ask[0] - (best_ask[0] * spread_pct),
+                "best_bid_size": best_bid[1],
+                "best_ask_size": best_ask[1],
+            }
+        )
 
     async def process(self):
         """Process messages received."""
@@ -48,14 +56,14 @@ class PBDEngine:
             return
 
         data = await self._stack.pop_all()
-        bids = list(chain.from_iterable([d['bids'] for d in data]))
-        asks = list(chain.from_iterable([d['asks'] for d in data]))
+        bids = list(chain.from_iterable([d["bids"] for d in data]))
+        asks = list(chain.from_iterable([d["asks"] for d in data]))
 
         result = self._algo(bids, asks)
         logger.info(result)
 
         try:
-            await self._producer.send(self._topic, result.encode('utf-8'))
+            await self._producer.send(self._topic, result.encode("utf-8"))
         except KafkaError as ex:
             logger.error(ex.args[0].str())
 
