@@ -18,3 +18,8 @@ poetry shell
 python pricing_engine
 python price_publisher
 ```
+
+## Notes
+
+1. To add other sources (e.g. Bybit, FTX), create a function for each and append the result to LockStack.
+2. To control (enable / disable) sources, we can create a class for it in the future. 
