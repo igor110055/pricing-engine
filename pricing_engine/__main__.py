@@ -19,6 +19,7 @@ async def main(topic):
         engine.run(),
         binance_pbd_ws(stack, binance_symbol),
         binance_pbd_ws(stack, binance_busd),
+        # * Add other provider websockets here, or create a class to control it later
     )
 
 
