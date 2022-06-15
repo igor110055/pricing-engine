@@ -1,24 +1,34 @@
 import asyncio
+import asyncclick as click
 from pricing_engine.engine import PBDEngine
-from pricing_engine.producer import Producer, load_ck_config
+from pricing_engine.utils.producer import create_ck_producer
+from pricing_engine.utils.binance import binance_pbd_ws
+from pricing_engine.utils.stack import LockStack
 
-# LATER: turn this into cli?
 
-if __name__ == '__main__':
+@click.command()
+@click.option('--topic', '-t', default='BTC_USDT', help='Topic to publish to')
+async def main(topic):
     loop = asyncio.get_event_loop()
-    configs = load_ck_config()
+    producer = create_ck_producer(loop)
 
-    producer = Producer(configs)
+    binance_symbol = ''.join(filter(str.isalnum, topic)).lower()
 
-    # TODO: Use asyncio queue to collect bidask from different platform
-    # TODO: sent to kafka in collector instead
+    stack = LockStack()
+    engine = PBDEngine(producer, stack, topic)
 
-    engine = PBDEngine(producer, 'ethusdt')
-
+    # FIXME: async does not catch ctrl+c
+    await producer.start()
     try:
-        loop.run_until_complete(engine.start())
+        await asyncio.gather(
+            engine.run(),
+            binance_pbd_ws(stack, binance_symbol),
+        )
     except KeyboardInterrupt:
         print('[Stopped by Ctrl+C]')
     finally:
-        # OPTIONAL: use producer.flush() to wait for outstanding message delivery
-        producer.close()
+        await producer.stop()
+
+
+if __name__ == '__main__':
+    main(_anyio_backend="asyncio")
