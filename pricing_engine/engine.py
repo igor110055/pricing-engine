@@ -22,7 +22,7 @@ class PBDEngine:
 
     def _algo(self, bids: List, asks: List):
         """Algo implementation for calculating best bid and ask."""
-        # FIXME: THIS IS INCORRECT AFTER CHANGES, need to find smallest using numpy
+
         best_bid = [float(bids[0][0]), float(bids[0][1])]
         best_ask = [float(asks[0][0]), float(asks[0][1])]
 
@@ -55,10 +55,19 @@ class PBDEngine:
             return
 
         data = await self._stack.pop_all()
+
+        logger.info(data)
+
         bids = list(chain.from_iterable([d["bids"] for d in data]))
         asks = list(chain.from_iterable([d["asks"] for d in data]))
 
-        result = self._algo(bids, asks)
+        sorted_bids = sorted(bids, key=lambda x: x[0], reverse=True)
+        sorted_asks = sorted(asks, key=lambda x: x[0])
+
+        #TODO: publish reconstructed orderbook to kafka
+
+        result = self._algo(sorted_bids, sorted_asks) #best rate algo
+
         logger.info(result)
 
         try:
