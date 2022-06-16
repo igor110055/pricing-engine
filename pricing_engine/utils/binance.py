@@ -27,17 +27,17 @@ async def binance_pbd_ws(
     ms: bool = False,
 ):
     url = gen_binance_pbd_ws_url(symbol, levels, ms)
+    exchange_symbol = f"binance-{symbol}"
 
     async for websocket in connect(url):
         logger.info(f"Connected to {url}")
         try:
             async for message in websocket:
                 data = json.loads(message)
-                exchange_symbol = "%s-%s"%('binance', symbol)
-                data["bids"] = [x+[exchange_symbol] for x in data["bids"]]
-                data["asks"] = [x+[exchange_symbol] for x in data["asks"]]
-                stack_data = {key: data[key] for key in ("bids", "asks")}
-                await stack.append(stack_data)
+                bids = [x + [exchange_symbol] for x in data["bids"]]
+                asks = [x + [exchange_symbol] for x in data["asks"]]
+
+                await stack.append({"bids": bids, "asks": asks})
         except ConnectionClosed:
             logger.warn(f"Disconnected from {url}, reconnecting...")
             continue
